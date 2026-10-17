@@ -1,0 +1,12 @@
+# 复制本文件为 local.properties，并把路径改成你自己机器上的 DevEco Studio 安装位置。
+#
+# 说明：
+#   - 本文件记录的是**本机绝对路径**，所以仓库里只保留这份 .example，真正的
+#     local.properties 已被 .gitignore 忽略。
+#   - 用 DevEco Studio 图形界面构建时，这个文件由 IDE 自动生成，通常不需要手动建。
+#   - 只有用命令行 hvigorw 构建（tools/build-phone.ps1）时才需要它。
+#
+# 路径写法：盘符后跟 `\:`，目录分隔符用 `/`。
+
+sdk.dir=D\:/Downloads/DevEco Studio/sdk
+nodejs.dir=D\:/Downloads/DevEco Studio/tools/node

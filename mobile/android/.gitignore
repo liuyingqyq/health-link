@@ -1,0 +1,8 @@
+# 构建工具链与产物（体积很大，不要提交）
+.tooling/
+dist/
+.gradle/
+build/
+app/build/
+local.properties
+*.log

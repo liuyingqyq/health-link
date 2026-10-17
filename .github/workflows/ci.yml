@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: 电脑端测试（Node ${{ matrix.node }} / ${{ matrix.os }}）
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: [18, 20, 22]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      # 本项目零第三方依赖，所以**没有 npm install 这一步**（故意的）
+      - name: 环境自检
+        run: node --version
+
+      - name: 语法检查（所有 .js）
+        # 用 node 自己遍历 + node --check 子进程，避免依赖 bash 的进程替换
+        # （ulimit/进程替换在 Git Bash 与 Linux 上行为不完全一致）
+        run: |
+          node -e "const{execFileSync}=require('child_process'),fs=require('fs'),path=require('path');const bad=[];const skip=new Set(['node_modules','.tooling','build','dist','.git','gradle-home','obj','bin']);function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){if(skip.has(e.name))continue;const p=path.join(d,e.name);if(e.isDirectory())walk(p);else if(p.endsWith('.js')){try{execFileSync(process.execPath,['--check',p],{stdio:'pipe'});}catch(err){bad.push(p);}}}}walk('pc');walk('tools');walk('mobile/android');if(bad.length){console.log('语法错误：');bad.forEach(f=>console.log('  '+f));process.exit(1);}console.log('全部 .js 语法通过');"
+
+      - name: 协议 / 并发 / 资源回收（53 项）
+        run: node pc/test/e2e.test.js
+
+      - name: BOM 容错（9 项）
+        run: node pc/test/bom-tolerance.test.js
+
+      - name: PC 蓝牙数据源纯逻辑（10 项，不需要蓝牙硬件）
+        run: node pc/test/pcble-source-logic.test.js
+
+      - name: 只读分享页断言（12 项）
+        run: node tools/verify-share-page.js
+
+      - name: 安卓端协议断言（14 项）
+        run: node mobile/android/verify-protocol.js
+
+  encoding:
+    name: 编码规范（.ps1 需 BOM / .cmd 需 GBK+CRLF）
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 检查编码与行尾
+        shell: pwsh
+        run: ./tools/check-encoding.ps1
+
+  docs:
+    name: 链接与文档自检
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # 检查 README / docs 里指向本地文件的 Markdown 链接是否都存在（防死链）
+      - name: 检查 Markdown 相对链接
+        run: |
+          node -e "const fs=require('fs'),path=require('path');const files=[];(function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){if(['node_modules','.git','dist'].includes(e.name))continue;const p=path.join(d,e.name);if(e.isDirectory())walk(p);else if(p.endsWith('.md'))files.push(p);}})('.');let bad=0;for(const f of files){const text=fs.readFileSync(f,'utf8');const re=/\[[^\]]*\]\(([^)]+)\)/g;let m;while((m=re.exec(text))){const target=m[1].split('#')[0].trim();if(!target||/^(https?:|mailto:|#)/.test(target))continue;const abs=path.resolve(path.dirname(f),decodeURIComponent(target));if(!fs.existsSync(abs)){console.log('死链: '+f+' -> '+target);bad++;}}}if(bad){console.log('共 '+bad+' 个死链');process.exit(1);}console.log('检查 '+files.length+' 个 Markdown，无死链');"

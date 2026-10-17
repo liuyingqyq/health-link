@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>隐私政策 — HealthLink</title>
+<style>
+  :root { --fg:#1a1a1a; --muted:#5c5c5c; --line:#e3e3e3; --bg:#fff; --accent:#0a59f7; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fg:#e8e8e8; --muted:#a0a0a0; --line:#333; --bg:#161616; --accent:#6ea8ff; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0; background:var(--bg); color:var(--fg);
+    font: 16px/1.75 -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", Roboto, sans-serif;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 40px 20px 80px; }
+  h1 { font-size: 1.7em; margin: 0 0 4px; }
+  h2 { font-size: 1.18em; margin: 2em 0 .5em; padding-top: .9em; border-top: 1px solid var(--line); }
+  h3 { font-size: 1.02em; margin: 1.4em 0 .3em; }
+  .meta { color: var(--muted); font-size: .9em; margin-bottom: 1.6em; }
+  .lead { padding: 14px 16px; border-left: 3px solid var(--accent); background: rgba(10,89,247,.06); border-radius: 0 6px 6px 0; }
+  table { border-collapse: collapse; width: 100%; margin: .8em 0; font-size: .94em; display: block; overflow-x: auto; }
+  th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: rgba(127,127,127,.08); font-weight: 600; }
+  code { background: rgba(127,127,127,.12); padding: .1em .35em; border-radius: 4px; font-size: .9em; }
+  ul, ol { padding-left: 1.5em; }
+  li { margin: .3em 0; }
+  footer { margin-top: 3em; padding-top: 1.2em; border-top: 1px solid var(--line); color: var(--muted); font-size: .9em; }
+  a { color: var(--accent); }
+  .fill { background: rgba(255,196,0,.22); padding: .05em .3em; border-radius: 3px; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>HealthLink 隐私政策</h1>
+<p class="meta">生效日期：2026 年 10 月 5 日　|　最后更新：2026 年 10 月 5 日</p>
+
+<p class="lead">
+HealthLink（以下简称“本应用”）是一款<strong>个人自用的健康数据采集与可视化工具</strong>，
+由个人开发者 <span class="fill">liuyingqyq</span>（以下简称“开发者”）开发。
+本政策说明本应用如何处理你的健康数据。请在使用前仔细阅读。
+</p>
+
+<h2>一、我们收集哪些数据</h2>
+
+<p>本应用仅在你<strong>主动授权</strong>后读取以下数据，全部来自你本人的设备与账号，不涉及任何其他人的数据。</p>
+
+<h3>1. 通过华为 Health Service Kit 读取的健康数据</h3>
+<table>
+  <thead>
+    <tr><th>数据项</th><th>具体内容</th><th>用途</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>心率数据</td><td>动态心率测量值、测量时间</td><td>展示实时与历史心率曲线</td></tr>
+    <tr><td>睡眠记录</td><td>入睡/出睡时间、时长、睡眠得分、睡眠分期（深睡/浅睡/REM/清醒等分段）</td><td>展示睡眠分期色带与得分趋势</td></tr>
+    <tr><td>血氧数据</td><td>血氧饱和度测量值、测量时间</td><td>展示血氧曲线</td></tr>
+    <tr><td>情绪数据</td><td>情绪状态记录</td><td>以时间轴展示情绪变化</td></tr>
+    <tr><td>实时心脏数据</td><td>采集期间的实时心率值</td><td>实时显示当前心率</td></tr>
+    <tr><td>历史数据</td><td>上述数据项近 <strong>7 天</strong>的历史记录</td><td>绘制近一周趋势与统计图表</td></tr>
+  </tbody>
+</table>
+
+<h3>2. 通过蓝牙（BLE）读取的数据</h3>
+<p>
+在你主动点击“连接设备”后，本应用作为 BLE 客户端连接你指定的心率设备，
+读取设备通过标准 GATT 服务（如心率服务 <code>0x180D</code>）提供的数据。
+连接的设备标识与设备名称仅保存在你手机本地，用于下次重连时提示。
+</p>
+
+<h3>3. 设备与配置信息</h3>
+<table>
+  <thead><tr><th>数据项</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td>本机设备 ID</td><td>首次启动时<strong>在本机随机生成</strong>的一串字符（16 字节随机值的十六进制表示），用于让接收端区分不同手机。<strong>它不是硬件标识符</strong>，不读取 IMEI、序列号、MAC 或任何系统设备编号。</td></tr>
+    <tr><td>已连接的 BLE 设备标识与名称</td><td>用于重连提示，仅存本机。</td></tr>
+    <tr><td>本地配置</td><td>你填写的接收端地址、采集周期、自动启动开关等偏好设置。</td></tr>
+  </tbody>
+</table>
+
+<h3>4. 我们不收集的数据</h3>
+<ul>
+  <li>不收集通讯录、短信、通话记录、相册、麦克风、摄像头、精确地理位置信息；</li>
+  <li>不收集华为账号信息（授权过程由华为系统完成，本应用不接触你的账号凭据）；</li>
+  <li>不收集广告标识符，不进行用户画像或行为追踪。</li>
+</ul>
+
+<h2>二、数据如何传输</h2>
+<p>
+<strong>本应用不向任何云端服务器上传数据。</strong>
+采集到的数据通过<strong>局域网 WebSocket</strong> 直接发送到你自己指定的接收端
+（通常是你在同一局域网内运行接收程序的个人电脑）。
+</p>
+<ul>
+  <li>传输在你自己的手机与自己的电脑之间进行，不经过开发者或任何第三方服务器；</li>
+  <li>局域网内传输未加密（本地网络直连）。请勿在你不信任的公共 Wi-Fi 下使用；</li>
+  <li>接收端地址由你自己填写，本应用不会擅自连接其他地址。</li>
+</ul>
+
+<h2>三、数据存储与保留</h2>
+<ul>
+  <li><strong>手机端</strong>：仅在本机保存配置项与近期数据的发送序号，用于断线续传；不长期保存健康数据副本。</li>
+  <li><strong>电脑端</strong>：数据保存在你运行接收程序的电脑上，保留时长与删除方式由你自己控制。</li>
+  <li>开发者<strong>不持有</strong>你的任何数据副本。</li>
+</ul>
+
+<h2>四、数据共享</h2>
+<p>
+本应用<strong>不向任何第三方共享、转让或公开披露</strong>你的数据，
+不用于广告、营销、信用评估或任何与“个人健康数据查看”无关的目的。
+若电脑端接收程序启用了“转发给他人”功能，数据将按<strong>你自己</strong>填写的目标地址发送，
+这属于你的主动行为，请在转发前自行评估接收方。
+</p>
+
+<h2>五、权限与授权</h2>
+<table>
+  <thead><tr><th>权限</th><th>用途</th></tr></thead>
+  <tbody>
+    <tr><td>健康数据读取权限（经华为 Health Service Kit 授权）</td><td>读取上述健康数据，需你在系统授权弹窗中主动同意</td></tr>
+    <tr><td>蓝牙相关权限（扫描/连接）</td><td>连接你指定的 BLE 心率设备</td></tr>
+    <tr><td>网络权限</td><td>与你自己电脑上的接收端建立局域网连接</td></tr>
+    <tr><td>后台运行（长时任务）</td><td>在你开启采集后保持后台采集；通知栏会显示常驻通知，删除该通知将停止采集</td></tr>
+  </tbody>
+</table>
+<p>
+你可以随时在手机「设置 → 应用 → 权限」中撤回上述授权，
+或在应用内停止采集。撤回授权后本应用将无法继续读取相应数据，但已在你电脑上的数据不受影响。
+</p>
+
+<h2>六、你的权利</h2>
+<ul>
+  <li><strong>撤回授权</strong>：随时通过系统设置或应用内停止采集；</li>
+  <li><strong>删除数据</strong>：删除手机上的本应用（卸载会清除本地配置），并自行删除电脑端的数据文件；</li>
+  <li><strong>了解数据流向</strong>：如对本政策有疑问，可通过下方邮箱联系开发者。</li>
+</ul>
+
+<h2>七、未成年人</h2>
+<p>本应用为个人自用工具，不面向未成年人提供服务。若使用者为未成年人，请在监护人陪同下使用并由监护人阅读本政策。</p>
+
+<h2>八、安全说明</h2>
+<ul>
+  <li>数据仅在本地局域网内传输，建议在可信网络（如家庭 Wi-Fi）中使用；</li>
+  <li>请妥善保管电脑端接收程序的访问令牌，避免他人连接；</li>
+  <li>本应用不提供医疗级安全承诺，不应用于对安全性有严格要求的场景。</li>
+</ul>
+
+<h2>九、重要声明</h2>
+<p>
+本应用提供的所有数据与图表<strong>仅供个人参考，不构成任何医疗诊断、治疗建议或健康结论</strong>。
+如有健康问题，请咨询专业医疗机构。本应用不是医疗器械，未经任何医疗器械认证。
+</p>
+
+<h2>十、本政策的变更</h2>
+<p>本政策如有更新，将在此页面发布并更新“最后更新”日期。继续使用本应用即视为接受更新后的政策。</p>
+
+<h2>十一、联系我们</h2>
+<p>
+开发者：<span class="fill">liuyingqyq</span><br>
+邮箱：<a href="mailto:liuyingqyq@outlook.com">liuyingqyq@outlook.com</a>
+</p>
+
+<footer>
+HealthLink 为个人自用工具。本页面为开发者自行发布的隐私政策说明。
+</footer>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,75 @@
+# ============================================================================
+#  HealthLink · .gitignore
+#
+#  原则：**只提交源码与文档**。所有可再生成的产物、本机相关配置、运行时数据都不入库。
+#  提交前自查： git status --short 里不该出现 config.json / bin / obj / .tooling / dist
+# ============================================================================
+
+# ---- 运行时配置与数据（含令牌，绝对不能提交）----
+pc/config.json
+pc/forwards.json
+pc/archive/
+config.json
+forwards.json
+*.local.json
+
+# ---- 证书与密钥（签名材料、私钥）----
+*.p12
+*.pfx
+*.p7b
+*.cer
+*.jks
+*.keystore
+*.pem
+*.key
+
+# ---- PC 蓝牙桥（C#）编译产物 ----
+#  bin/ 里含约 24MB Windows SDK 运行时 DLL，可由 pc/ble/build-ble.ps1 重新生成
+pc/ble/bin/
+pc/ble/obj/
+tools/ble-diag/bin/
+tools/ble-diag/obj/
+*.pdb
+*.user
+
+# ---- 手机端：鸿蒙 ----
+mobile/harmonyos/build/
+mobile/harmonyos/entry/build/
+mobile/harmonyos/.hvigor/
+mobile/harmonyos/hvigor/.hvigor/
+mobile/harmonyos/oh_modules/
+mobile/harmonyos/node_modules/
+mobile/harmonyos/**/*.hap
+mobile/harmonyos/**/*.hsp
+mobile/harmonyos/**/*.har
+# 记录本机 DevEco / Node 路径，换机器必改；仓库里保留 local.properties.example
+mobile/harmonyos/local.properties
+mobile/harmonyos/.idea/
+
+# ---- 手机端：安卓 ----
+#  .tooling/ 是下载的 Gradle 8.7 + JDK 21（约 1.6 GB），由 build-apk.ps1 重建
+mobile/android/.tooling/
+mobile/android/.gradle/
+mobile/android/build/
+mobile/android/app/build/
+mobile/android/local.properties
+mobile/android/dist/
+
+# ---- 构建缓存与分发包 ----
+.build-cache/
+dist/
+*.zip
+*.apk
+*.hap
+
+# ---- 日志与临时文件 ----
+*.log
+*.tmp
+*.bak
+Thumbs.db
+.DS_Store
+
+# ---- 编辑器 ----
+.idea/
+.vscode/
+*.swp

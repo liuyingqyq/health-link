@@ -1,0 +1,23 @@
+# 代码混淆规则（release 构建用）
+#
+# 当前 build-profile.json5 里 obfuscation.ruleOptions.enable = false，
+# 所以这份规则**不生效**。保留文件是为了：
+#   1. 让 DevEco 的工程校验通过（build-profile.json5 引用了它）
+#   2. 将来要开启混淆时直接在这里加规则即可
+#
+# 开启方式：把 entry/build-profile.json5 里
+#   "obfuscation": { "ruleOptions": { "enable": false } }
+# 改成 true。
+#
+# 常用规则示例（按需取消注释）：
+#
+#   # 保留某个类/方法不被改名
+#   -keep-property-name
+#   -keep-global-name
+#
+#   # 保留 ArkTS 装饰器相关（UI 组件名被改名会导致运行时找不到）
+#   -keep-file-name
+#   -keep-dts
+#
+# ⚠️ 注意：本项目 UI 是 ArkUI 声明式写法，开启混淆后如果界面出现异常，
+#    优先检查是否把 @Component / @Entry 装饰的结构体名混淆掉了。

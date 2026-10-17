@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    HealthLink PC BLE 桥
+    ====================
+    目标框架选 net8.0-windows10.0.19041.0 的原因：
+      · .NET 8+ 对该 TFM 内置了 Windows SDK 投影（WinRT），
+        C# 可以像用普通 .NET 类型一样直接调用 Windows.Devices.Bluetooth.*
+      · 不需要任何 NuGet 包（零外部依赖），
+        与项目"零依赖"的约束一致
+      · 发布的单文件 exe 不依赖用户另外装 SDK，运行时已在系统里
+
+    为什么不用桌面 csc.exe（.NET Framework 自带）：
+      它是 C# 5，编译 WinMD 时缺少 Windows 外观程序集（System.Runtime.WindowsRuntime
+      标识匹配不上 Windows 运行时），WinRT 异步 API 完全编译不过。
+
+    为什么不用 Node 的 BLE 库（noble 等）：
+      需要 npm 下载原生模块，本机 npm 源不可用；且与 Node 24 兼容性差。
+  -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>HealthLinkBle</AssemblyName>
+    <RootNamespace>HealthLinkBle</RootNamespace>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <!-- 中文注释与字符串：显式按 UTF-8 读源码 -->
+    <CodePage>65001</CodePage>
+    <!-- 只编译本目录的 .cs，避免把子目录里的一次性诊断程序卷进来 -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="BleHrBridge.cs" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>用户协议 — HealthLink</title>
+<style>
+  :root { --fg:#1a1a1a; --muted:#5c5c5c; --line:#e3e3e3; --bg:#fff; --accent:#0a59f7; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fg:#e8e8e8; --muted:#a0a0a0; --line:#333; --bg:#161616; --accent:#6ea8ff; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0; background:var(--bg); color:var(--fg);
+    font: 16px/1.75 -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", Roboto, sans-serif;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 40px 20px 80px; }
+  h1 { font-size: 1.7em; margin: 0 0 4px; }
+  h2 { font-size: 1.18em; margin: 2em 0 .5em; padding-top: .9em; border-top: 1px solid var(--line); }
+  .meta { color: var(--muted); font-size: .9em; margin-bottom: 1.6em; }
+  .lead { padding: 14px 16px; border-left: 3px solid var(--accent); background: rgba(10,89,247,.06); border-radius: 0 6px 6px 0; }
+  table { border-collapse: collapse; width: 100%; margin: .8em 0; font-size: .94em; display: block; overflow-x: auto; }
+  th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: rgba(127,127,127,.08); font-weight: 600; }
+  code { background: rgba(127,127,127,.12); padding: .1em .35em; border-radius: 4px; }
+  ul, ol { padding-left: 1.5em; }
+  li { margin: .3em 0; }
+  footer { margin-top: 3em; padding-top: 1.2em; border-top: 1px solid var(--line); color: var(--muted); font-size: .9em; }
+  a { color: var(--accent); }
+  .fill { background: rgba(255,196,0,.22); padding: .05em .3em; border-radius: 3px; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>HealthLink 用户协议</h1>
+<p class="meta">生效日期：2026 年 10 月 5 日　|　最后更新：2026 年 10 月 5 日</p>
+
+<p class="lead">
+本协议是你与 <span class="fill">liuyingqyq</span>（以下简称“开发者”）之间就使用本应用达成的约定。
+<strong>下载、安装或使用本应用，即表示你已阅读并同意本协议全部条款。</strong>
+如不同意，请停止安装与使用。
+</p>
+
+<h2>一、服务说明</h2>
+<p>
+HealthLink 是一款<strong>个人自用的健康数据采集与可视化工具</strong>，由两部分组成：
+</p>
+<ol>
+  <li><strong>手机端应用</strong>：运行于 HarmonyOS 设备，经你授权后读取健康数据，或通过蓝牙连接你指定的心率设备采集数据；</li>
+  <li><strong>电脑端接收程序</strong>：运行于你自己的电脑，接收手机端通过局域网发送的数据并可视化展示。</li>
+</ol>
+<p>
+本应用<strong>不提供云端服务</strong>，不依赖开发者的任何服务器，数据在你自己控制的设备之间传输与保存。
+</p>
+
+<h2>二、非医疗器械声明</h2>
+<p class="lead">
+本应用<strong>不是医疗器械</strong>，未经任何医疗器械认证，<strong>不用于疾病的诊断、治疗、监护或预防</strong>。
+应用内显示的所有数据、曲线、得分与分期<strong>仅供个人参考</strong>，
+不应作为任何医疗决策的依据。如你对自己的健康状况有疑问，请及时咨询专业医疗机构或医生。
+</p>
+
+<h2>三、使用条件</h2>
+<ul>
+  <li>你需自行准备可运行的 HarmonyOS 设备、电脑及网络环境；</li>
+  <li>通过华为 Health Service Kit 读取健康数据，需要相应数据权限已获华为审批，且你已在设备上主动授权；</li>
+  <li>蓝牙采集需要你的设备支持相应的 BLE 服务（如标准心率服务 <code>0x180D</code>）；部分厂商设备采用私有协议，可能无法读取，这属于设备限制而非应用缺陷。</li>
+</ul>
+
+<h2>四、你的责任</h2>
+<ol>
+  <li><strong>合法使用</strong>：你应确保所采集的数据为你本人数据，或你已获得数据主体的明确授权。<strong>不得</strong>使用本应用采集、传输或处理他人的健康数据而未获授权。</li>
+  <li><strong>网络环境</strong>：局域网传输未加密，你应自行判断所处网络是否可信，避免在公共或不可信网络中使用。</li>
+  <li><strong>转发行为</strong>：电脑端的转发功能会将数据发送至你填写的目标地址。该行为及其后果由你自行承担，请在转发前确认接收方并取得其同意。</li>
+  <li><strong>访问令牌</strong>：你应妥善保管电脑端接收程序的访问令牌，因令牌泄露导致的未授权访问由你自行承担。</li>
+  <li><strong>遵守法律</strong>：你应遵守所在国家或地区的法律法规使用本应用。</li>
+</ol>
+
+<h2>五、数据归属</h2>
+<p>
+你采集产生的数据归<strong>你本人</strong>所有。开发者不获取、不持有、不接触你的任何数据副本。
+你应自行负责数据的备份与保管。
+</p>
+
+<h2>六、知识产权</h2>
+<p>
+本应用的软件代码、界面设计及相关文档的知识产权归开发者所有。
+在未获得开发者书面许可的情况下，你不得将本应用用于商业销售、二次分发或声称其为你的原创作品。
+个人学习、研究与自用不受此限制。
+</p>
+
+<h2>七、免责声明</h2>
+<ol>
+  <li>本应用按“现状”提供，开发者不对其适用性、无中断运行或数据绝对准确作出保证；</li>
+  <li>因设备兼容性、系统版本、蓝牙协议差异、网络环境、第三方服务变更等原因导致的功能不可用或数据缺失，开发者不承担责任；</li>
+  <li>因你自身操作（如误删数据、卸载应用、错误配置转发地址）造成的数据丢失，开发者不承担责任；</li>
+  <li><strong>你基于本应用数据作出的任何决定及其后果，由你自行承担。</strong></li>
+</ol>
+
+<h2>八、服务变更与终止</h2>
+<p>
+开发者可能因技术原因更新、调整或停止本应用的维护。由于本应用为个人自用工具，
+开发者无义务持续提供更新或技术支持。你可以随时卸载本应用以终止使用。
+</p>
+
+<h2>九、协议的变更</h2>
+<p>
+本协议如有更新，将在此页面发布并更新“最后更新”日期。更新后继续使用本应用，即视为你接受修订后的协议。
+</p>
+
+<h2>十、适用法律与争议解决</h2>
+<p>
+本协议的订立、效力、解释与争议解决适用中华人民共和国法律。
+因本协议产生的争议，双方应友好协商解决；协商不成的，可依法向有管辖权的人民法院提起诉讼。
+</p>
+
+<h2>十一、联系方式</h2>
+<p>
+开发者：<span class="fill">liuyingqyq</span><br>
+邮箱：<a href="mailto:liuyingqyq@outlook.com">liuyingqyq@outlook.com</a>
+</p>
+
+<footer>
+相关文档：<a href="./privacy.html">《HealthLink 隐私政策》</a>
+</footer>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,25 @@
+root = true
+
+# 统一换行与缩进；编码细节见 CONTRIBUTING.md 的「编码规矩」一节
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# Windows 脚本必须保留 CRLF（见 CONTRIBUTING.md）
+[*.{cmd,bat,ps1}]
+end_of_line = crlf
+trim_trailing_whitespace = false
+
+[*.md]
+trim_trailing_whitespace = false
+
+# C# / Kotlin / ArkTS 用 4 空格（与现有代码保持一致）
+[*.{cs,kt,ets,gradle}]
+indent_size = 4
+
+[*.json]
+indent_size = 2

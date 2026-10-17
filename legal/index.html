@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HealthLink 法律文档</title>
+<style>
+  :root { --fg:#1a1a1a; --muted:#5c5c5c; --line:#e3e3e3; --bg:#fff; --accent:#0a59f7; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fg:#e8e8e8; --muted:#a0a0a0; --line:#333; --bg:#161616; --accent:#6ea8ff; }
+  }
+  body { margin:0; background:var(--bg); color:var(--fg);
+    font: 16px/1.75 -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", Roboto, sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 64px 20px; }
+  h1 { font-size: 1.6em; margin: 0 0 .2em; }
+  p.sub { color: var(--muted); margin: 0 0 2em; }
+  a.card { display:block; padding:18px 20px; margin:12px 0; border:1px solid var(--line);
+    border-radius:10px; text-decoration:none; color:inherit; transition:border-color .15s; }
+  a.card:hover { border-color: var(--accent); }
+  a.card b { display:block; font-size:1.05em; margin-bottom:.25em; }
+  a.card span { color: var(--muted); font-size:.92em; }
+  footer { margin-top:3em; color:var(--muted); font-size:.9em; }
+</style>
+</head>
+<body>
+<main>
+  <h1>HealthLink 法律文档</h1>
+  <p class="sub">个人健康数据采集与可视化工具</p>
+
+  <a class="card" href="./privacy.html">
+    <b>隐私政策</b>
+    <span>说明本应用收集哪些数据、如何传输与存储、以及你的权利</span>
+  </a>
+  <a class="card" href="./agreement.html">
+    <b>用户协议</b>
+    <span>使用条件、你的责任、非医疗器械声明与免责条款</span>
+  </a>
+
+  <footer>开发者：liuyingqyq　|　联系邮箱：liuyingqyq@outlook.com</footer>
+</main>
+</body>
+</html>

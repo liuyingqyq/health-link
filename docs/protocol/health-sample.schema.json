@@ -1,0 +1,111 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://health-link.local/schemas/health-sample.schema.json",
+  "title": "HealthLink v1 Sample Payload",
+  "description": "手机端 -> 电脑端 sample 消息的 payload 结构。信封字段（v/type/seq/ts/deviceId）见 docs/protocol/README.md 第 2 节。",
+  "type": "object",
+  "required": ["metric", "unit", "startTime", "endTime", "source"],
+  "additionalProperties": true,
+  "properties": {
+    "metric": {
+      "type": "string",
+      "enum": [
+        "heart_rate",
+        "resting_heart_rate",
+        "hrv",
+        "spo2",
+        "stress",
+        "sleep",
+        "sleep_nap",
+        "body_temperature",
+        "heart_rate_series"
+      ]
+    },
+    "value": {
+      "type": ["number", "null"],
+      "description": "标量指标值；metric=sleep 时为 null。"
+    },
+    "unit": {
+      "type": ["string", "null"],
+      "enum": ["bpm", "ms", "%", "score", "\u00b0C", null]
+    },
+    "startTime": { "type": "integer", "minimum": 0, "description": "数据点开始时间，Unix 毫秒" },
+    "endTime": { "type": "integer", "minimum": 0, "description": "数据点结束时间，Unix 毫秒" },
+    "source": { "type": "string", "enum": ["healthStore", "mock", "manual"] },
+    "sleep": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/definitions/sleep" }
+      ]
+    },
+    "extra": { "type": "object", "additionalProperties": true }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "metric": { "const": "sleep" } }, "required": ["metric"] },
+      "then": {
+        "required": ["sleep"],
+        "properties": { "sleep": { "$ref": "#/definitions/sleep" } }
+      }
+    }
+  ],
+  "definitions": {
+    "sleep": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [],
+      "properties": {
+        "fallAsleepTime": { "type": "integer", "minimum": 0 },
+        "wakeupTime": { "type": "integer", "minimum": 0 },
+        "duration": { "type": "integer", "minimum": 0, "description": "秒" },
+        "sleepScore": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "sleepEfficiency": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "deepSleepContinuity": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "respiratoryQualityScore": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "deepDuration": { "type": "integer", "minimum": 0 },
+        "shallowDuration": { "type": "integer", "minimum": 0 },
+        "dreamDuration": { "type": "integer", "minimum": 0 },
+        "wakeDuration": { "type": "integer", "minimum": 0 },
+        "wakeCount": { "type": "integer", "minimum": 0 },
+        "turnOverCount": { "type": "integer", "minimum": 0 },
+        "onBedDuration": { "type": "integer", "minimum": 0 },
+        "recordDuration": { "type": "integer", "minimum": 0 },
+        "noonDuration": { "type": "integer", "minimum": 0, "description": "仅 sleep_nap" },
+        "noonRecordDuration": { "type": "integer", "minimum": 0, "description": "仅 sleep_nap" },
+        "sleepType": { "type": "integer", "enum": [1, 2, 3, 4] },
+        "sleepEndReason": { "type": "integer", "enum": [0, 1, 2, 3] },
+        "sleepSegment": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["startTime", "endTime", "sleepStatus"],
+            "additionalProperties": true,
+            "properties": {
+              "startTime": { "type": "integer", "minimum": 0 },
+              "endTime": { "type": "integer", "minimum": 0 },
+              "sleepStatus": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 7,
+                "description": "官方 SleepSegment.sleepStatus：0未知 1深睡 2浅睡 3REM 4清醒 5小睡 6卧床 7手动记录"
+              }
+            }
+          }
+        },
+        "legacy": {
+          "type": "object",
+          "description": "旧版 JS SDK 专有字段，新版 healthFields.Sleep 中不存在，下游必须允许缺失。",
+          "additionalProperties": true,
+          "properties": {
+            "snoreFreq": { "type": "integer" },
+            "avgHeartRate": { "type": "integer" },
+            "avgOxygenSaturation": { "type": "integer" },
+            "avgBreathRate": { "type": "number" },
+            "avgHrv": { "type": "integer" },
+            "deepSleepPart": { "type": "integer" }
+          }
+        }
+      }
+    }
+  }
+}

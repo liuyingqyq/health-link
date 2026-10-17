@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">健康互联（Research 版）</string>
+    <string name="subtitle">采集穿戴设备数据并通过局域网发送到电脑</string>
+
+    <string name="label_url">电脑地址</string>
+    <string name="hint_url">ws://192.168.x.x:8787/ingest?token=…</string>
+    <string name="hint_url_note">整行照抄电脑端启动器打印的地址（含 token）</string>
+
+    <string name="label_source">数据源</string>
+    <string name="source_sim">模拟数据（不需要任何权限，用来验证链路）</string>
+    <string name="source_ble">BLE 心率带（真实心率，需标准 0x180D 设备）</string>
+    <string name="source_sdk">HUAWEI Research SensorPro（华为手表，需平台过审）</string>
+    <string name="source_note">华为手表读不到标准蓝牙心率；手表数据请走 SensorPro（需研究项目过审 + 放入 SDK）</string>
+    <string name="scan_ble">扫描并连接心率设备</string>
+
+    <string name="connect">连接电脑</string>
+    <string name="start_collect">开始采集</string>
+    <string name="stop_collect">停止采集</string>
+
+    <string name="label_state">运行状态</string>
+    <string name="label_log">运行日志</string>
+
+    <string name="state_fmt">%1$s · %2$s</string>
+</resources>

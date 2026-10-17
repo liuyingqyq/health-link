@@ -1,0 +1,27 @@
+{
+  "_说明": "复制为 pc\\config.json 后按需修改；pc\\config.json 已被 .gitignore 忽略，不要提交进仓库。",
+  "_令牌说明": "authToken 留空时启动器会自动生成 32 位十六进制令牌。想自己定就填任意 32 位十六进制字符串。",
+  "authToken": "7e55bd3b76ebfe5eaacb2db552603e1b",
+  "host": "::",
+  "port": 18787,
+  "logLevel": "info",
+  "pcBle": {
+    "enabled": false,
+    "deviceName": "",
+    "address": "AA:BB:CC:DD:EE:FF",
+    "scanTimeoutSec": 25,
+    "reconnectDelaySec": 5
+  },
+  "bufferCapacity": 20000,
+  "offlineAfterMs": 120000,
+  "defaultCollectIntervalMs": 60000,
+  "heartbeatMs": 30000,
+  "maxFrameBytes": 1048576,
+  "maxMessageBytes": 8388608,
+  "maxQueryLimit": 1000,
+  "forwardStore": "forwards.json",
+  "archive": {
+    "enabled": false,
+    "file": "archive/healthlink-YYYYMMDD.jsonl"
+  }
+}

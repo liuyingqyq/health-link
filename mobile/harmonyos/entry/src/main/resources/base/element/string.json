@@ -1,0 +1,36 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "HealthLink 健康数据采集模块"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "采集华为运动健康数据并上传到电脑端"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "HealthLink"
+    },
+    {
+      "name": "reason_internet",
+      "value": "把采集到的健康数据上传到你自己的电脑"
+    },
+    {
+      "name": "reason_network_info",
+      "value": "用于判断当前是否在局域网内，以便提示连接失败原因"
+    },
+    {
+      "name": "reason_keep_running",
+      "value": "在你退出界面后继续在后台采集并上传健康数据"
+    },
+    {
+      "name": "reason_bluetooth",
+      "value": "连接你的手表/手环/心率带，读取心率等健康数据"
+    },
+    {
+      "name": "reason_bluetooth_scan",
+      "value": "搜索附近可连接的蓝牙健康设备"
+    }
+  ]
+}

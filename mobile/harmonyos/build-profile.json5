@@ -1,0 +1,70 @@
+{
+  "app": {
+    // ⚠️ 签名配置留空：调试证书是**每台机器各自生成**的，不能入库。
+    //    第一次用 DevEco Studio 打开本工程时，它会自动生成调试签名
+    //    （File → Project Structure → Signing Configs → Automatically generate signature），
+    //    生成后这里会被自动填上你的证书路径与加密口令。
+    //    想手动填：把下面注释掉的模板改成你的值即可。
+    "signingConfigs": [],
+    // "signingConfigs": [
+    //   {
+    //     "name": "default",
+    //     "type": "HarmonyOS",
+    //     "material": {
+    //       "certpath": "%USERPROFILE%\\.ohos\\config\\default_phone_xxx.cer",
+    //       "keyAlias": "debugKey",
+    //       "keyPassword": "<DevEco 生成的加密口令>",
+    //       "profile": "%USERPROFILE%\\.ohos\\config\\default_phone_xxx.p7b",
+    //       "signAlg": "SHA256withECDSA",
+    //       "storeFile": "%USERPROFILE%\\.ohos\\config\\default_phone_xxx.p12",
+    //       "storePassword": "<DevEco 生成的加密口令>"
+    //     }
+    //   }
+    // ],
+    "products": [
+      {
+        "name": "default",
+        // 签名配置留空时不要写 signingConfig，否则 DevEco 会报「找不到签名配置 default」
+        // 自动生成调试签名后，把下面这行取消注释即可：
+        // "signingConfig": "default",
+        // 最低兼容 API 12（HarmonyOS 5.0.0）——这是本应用真实的下限：
+        //   · HealthServiceKit 全部接口 @since 5.0.0(12)，是硬下限
+        //   · 长时任务 / preferences @since 9，webSocket 更低
+        //   · getAppPreloadType 需要 API 22，但代码里已 try/catch 兜住，不影响低版本
+        // 设成 12 意味着「HarmonyOS 5.0 及以上都能装」，包括 HarmonyOS 6 / 7。
+        "compatibleSdkVersion": "5.0.0(12)",
+        // 刻意不写 targetSdkVersion：
+        //   1) 官方模板 previewProject 也是不写，构建时自动跟随当前 SDK
+        //   2) 写死会带来两个风险：① 版本字符串格式不对 → 直接构建失败；
+        //      ② 写成低于设备 API 的值（例如 6.1.0(23) 装在 HarmonyOS 7 / API 26 上），
+        //         可能触发安装报错 "compatibleSdkVersion and releaseType of the app
+        //         do not match the apiVersion and releaseType on the device."
+        //      不写就没有这两个问题，始终与手头的 SDK（本机为 API 26 = HarmonyOS 7）一致。
+        "runtimeOS": "HarmonyOS",
+        "targetSdkVersion": "26.0.0"
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug"
+      },
+      {
+        "name": "release"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}

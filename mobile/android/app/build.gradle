@@ -1,0 +1,77 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.healthlink.collector'
+
+    // 与本机已安装的 SDK 组件对齐：
+    //   platforms/android-37.0、build-tools/36.0.0（见 local.properties 的 sdk.dir）
+    // 若你的 Android Studio 里装了别的版本，把这两行改成对应数字即可；
+    // 用 Android Studio 的 SDK Manager 装 android-34 后也可以改回 compileSdk 34。
+    compileSdk 36
+    buildToolsVersion "36.0.0"
+
+    defaultConfig {
+        applicationId "com.healthlink.collector"
+        minSdk 24
+        targetSdk 36
+        versionCode 1000000
+        versionName "1.0.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+
+    packaging {
+        resources {
+            excludes += ['/META-INF/{AL2.0,LGPL2.1}']
+        }
+    }
+
+    // 本机只有 android-37.0，而 AGP 8.5 的已知版本表里没有 37。
+    // 这里不指定 compileSdkPreview，先让 AGP 按 compileSdk 36 走；
+    // 若 HAX 报 "platform not found"，见 mobile/android/README.md 的「构建排错」一节。
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.4'
+
+    // 网络：WebSocket + 统一 OKHttp，避免手写 RFC 6455
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+
+    // Kotlin 协程（数据源 init 是 suspend）
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1'
+
+    // HUAWEI Research SensorPro SDK 由平台审批后下发，放入 app/libs/ 即被自动纳入。
+    // 目录不存在或为空时不会报错，因此今天就能编译。
+    implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'])
+
+    testImplementation 'junit:junit:4.13.2'
+}

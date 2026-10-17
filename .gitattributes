@@ -1,0 +1,49 @@
+# ============================================================================
+#  行尾与二进制约定
+#
+#  为什么需要这个文件：Windows 上 core.autocrlf=true 会把文件**以 LF 存进仓库**，
+#  检出时再转回 CRLF。这对 .js/.md 没问题，但对批处理是致命的 ——
+#  在 Linux/macOS 上 clone 下来时 autocrlf=false，`.cmd` 就会变成**纯 LF**，
+#  而 cmd.exe 解析 LF-only 的批处理时 goto / 多行块会出错（窗口一闪就关的经典原因）。
+#
+#  所以这里把类型钉死，不依赖任何人的本机 git 配置。
+#  （编码规则见 CONTRIBUTING.md：`.ps1` 必须 UTF-8 **带 BOM**，`.cmd` 必须 **GBK 无 BOM**）
+# ============================================================================
+
+# 默认：仓库内统一 LF，检出时按平台原生
+* text=auto
+
+# ---- Windows 脚本：任何平台检出都必须是 CRLF ----
+*.cmd  text eol=crlf
+*.bat  text eol=crlf
+*.ps1  text eol=crlf
+*.psm1 text eol=crlf
+
+# ---- shell 脚本：必须 LF ----
+*.sh   text eol=lf
+
+# ---- 二进制：不做任何行尾转换与合并 ----
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.ico  binary
+*.gif  binary
+*.webp binary
+*.apk  binary
+*.hap  binary
+*.zip  binary
+*.jar  binary
+*.dll  binary
+*.exe  binary
+*.pdb  binary
+*.p12  binary
+*.pfx  binary
+*.p7b  binary
+*.cer  binary
+*.jks  binary
+
+# ---- 文档/配置：diff 友好 ----
+*.md   text
+*.json text
+*.json5 text
+*.yml  text

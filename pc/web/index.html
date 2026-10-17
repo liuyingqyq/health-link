@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HealthLink 健康数据面板</title>
+<!--
+  零外部依赖：所有资源都是本地相对路径，无 CDN、无框架、无 npm 包，可完全离线打开。
+  契约第 6 节规定静态资源映射在 /assets/<file>；这里同时给出 /assets/<file> 与同名裸相对路径，
+  使「服务端只映射 /assets/」与「pc/web 目录直接作为静态根」两种部署方式都能加载同一批文件。
+-->
+<link rel="stylesheet" href="assets/styles.css" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<noscript><p class="noscript">本面板需要启用 JavaScript 才能显示实时数据。</p></noscript>
+
+<!-- 令牌门（契约第 6 节）：URL 未带 token 或令牌无效时显示 -->
+<div id="gate" class="gate" hidden>
+  <form id="gate-form" class="gate-card" autocomplete="off">
+    <h1>HealthLink 健康数据面板</h1>
+    <p class="muted">URL 中没有有效的 <code>token</code> 参数。请输入电脑端 <code>pc/config.json</code> 的
+      <code>authToken</code>（未配置时请见服务启动日志打印的随机令牌）。</p>
+    <label for="gate-input">访问令牌</label>
+    <input id="gate-input" name="token" type="password" placeholder="请输入访问令牌" />
+    <button type="submit" class="btn primary">进入面板</button>
+    <p id="gate-error" class="gate-error" hidden></p>
+  </form>
+</div>
+
+<header class="topbar">
+  <div class="brand">HealthLink<span>健康数据面板</span></div>
+
+  <!-- 验收点 1：顶部状态条 -->
+  <div class="statusbar">
+    <span class="stat"><i>服务</i><b id="st-svc" class="warn">检测中…</b></span>
+    <span class="stat"><i>协议版本</i><b id="st-version">—</b></span>
+    <span class="stat"><i>运行时长</i><b id="st-uptime">—</b></span>
+    <span class="stat"><i>设备在线</i><b id="st-devices">—</b></span>
+    <span class="stat"><i>订阅者</i><b id="st-subs">—</b></span>
+    <span class="stat"><i>入站样本</i><b id="st-samples">—</b></span>
+    <span class="stat"><i>实时连接</i><b id="st-ws" class="warn">未连接</b></span>
+  </div>
+
+  <div class="actions">
+    <div class="seg" id="window-switch" role="group" aria-label="时间窗口">
+      <button type="button" data-window="60000">1 分钟</button>
+      <button type="button" data-window="600000" class="active">10 分钟</button>
+      <button type="button" data-window="3600000">60 分钟</button>
+    </div>
+    <!-- 验收点 7：导出按钮 -->
+    <button type="button" id="export-csv" class="btn">导出 CSV</button>
+    <button type="button" id="export-json" class="btn">导出 JSON</button>
+  </div>
+</header>
+
+<p id="notice" class="notice" hidden></p>
+
+<main class="layout">
+  <div class="col">
+    <!-- 验收点 2：设备卡片列表 -->
+    <section class="panel">
+      <h2>设备 <small id="device-count">0 台</small></h2>
+      <div id="device-list" class="device-list"></div>
+      <p id="device-empty" class="muted">尚未有设备连接。</p>
+    </section>
+
+    <!-- 验收点 5：实时事件流 -->
+    <section class="panel">
+      <h2>实时事件流 <small>最新 <span id="event-count">0</span> / 50 条</small></h2>
+      <ol id="event-list" class="event-list"></ol>
+      <p id="event-empty" class="muted">等待 WebSocket 数据…</p>
+    </section>
+  </div>
+
+  <div class="col">
+    <!-- 验收点 3：Canvas 实时曲线 -->
+    <section class="panel">
+      <h2>实时曲线 <small>窗口：<span id="window-label">10 分钟</span>；横轴为本地时间 HH:mm:ss；不同设备不同颜色</small></h2>
+      <div class="charts">
+        <div class="chart-block">
+          <div class="chart-head"><span class="chart-title">动态心率 <em>bpm</em></span><span class="chart-latest" id="latest-heart_rate">—</span></div>
+          <canvas id="chart-heart_rate" class="chart-canvas"></canvas>
+          <div class="chart-legend" id="legend-heart_rate"></div>
+        </div>
+        <div class="chart-block">
+          <div class="chart-head"><span class="chart-title">静息心率 <em>bpm</em></span><span class="chart-latest" id="latest-resting_heart_rate">—</span></div>
+          <canvas id="chart-resting_heart_rate" class="chart-canvas"></canvas>
+          <div class="chart-legend" id="legend-resting_heart_rate"></div>
+        </div>
+        <div class="chart-block">
+          <div class="chart-head"><span class="chart-title">心率变异性 HRV <em>ms</em></span><span class="chart-latest" id="latest-hrv">—</span></div>
+          <canvas id="chart-hrv" class="chart-canvas"></canvas>
+          <div class="chart-legend" id="legend-hrv"></div>
+        </div>
+        <div class="chart-block">
+          <div class="chart-head"><span class="chart-title">血氧饱和度 <em>%</em></span><span class="chart-latest" id="latest-spo2">—</span></div>
+          <canvas id="chart-spo2" class="chart-canvas"></canvas>
+          <div class="chart-legend" id="legend-spo2"></div>
+        </div>
+        <div class="chart-block">
+          <div class="chart-head"><span class="chart-title">压力得分 <em>score</em></span><span class="chart-latest" id="latest-stress">—</span></div>
+          <canvas id="chart-stress" class="chart-canvas"></canvas>
+          <div class="chart-legend" id="legend-stress"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 验收点 4：睡眠卡片 -->
+    <section class="panel">
+      <h2>最近一次睡眠 <small>metric=sleep</small></h2>
+      <p id="sleep-empty" class="muted">尚未收到睡眠记录（等待 metric=sleep 的样本）。</p>
+      <div id="sleep-body" hidden>
+        <div class="kv-grid">
+          <div class="kv"><i>睡眠得分</i><b id="sleep-score">—</b></div>
+          <div class="kv"><i>睡眠时长</i><b id="sleep-duration">—</b></div>
+          <div class="kv"><i>睡眠效率</i><b id="sleep-efficiency">—</b></div>
+          <div class="kv"><i>醒来次数</i><b id="sleep-wakecount">—</b></div>
+          <div class="kv"><i>入睡 → 起床</i><b id="sleep-range">—</b></div>
+          <div class="kv"><i>睡眠类型</i><b id="sleep-type">—</b></div>
+        </div>
+        <h3>分期色带 <small>sleepSegment.sleepStatus：0未知 1深睡 2浅睡 3REM 4清醒 5小睡 6卧床 7手动记录</small></h3>
+        <div id="sleep-band" class="sleep-band-host"></div>
+        <div id="sleep-stages" class="chip-grid"></div>
+        <h3>旧版扩展字段 legacy（可缺失）</h3>
+        <div id="sleep-legacy" class="kv-grid"></div>
+        <p id="sleep-legacy-note" class="muted"></p>
+      </div>
+    </section>
+
+    <!-- 验收点 6：转发目标面板 -->
+    <section class="panel">
+      <h2>转发目标 <small>GET / POST / DELETE /api/forward</small></h2>
+      <div id="forward-list" class="forward-list"></div>
+      <p id="forward-note" class="muted">尚未配置转发目标。</p>
+      <p id="forward-error" class="form-error" hidden></p>
+      <form id="forward-form" class="forward-form" autocomplete="off">
+        <input id="f-id" placeholder="目标 id（必填，如 oncall-pc）" />
+        <select id="f-kind" aria-label="转发方式">
+          <option value="websocket">websocket（长连接）</option>
+          <option value="http">http（每批 POST 到 url）</option>
+        </select>
+        <input id="f-url" placeholder="目标地址 url，如 ws://192.168.1.50:8788/ingest?token=xxx" />
+        <input id="f-batch" type="number" min="0" step="100" value="2000" placeholder="攒批间隔 batchMs" />
+        <button type="submit" class="btn primary">新增 / 更新</button>
+      </form>
+    </section>
+  </div>
+</main>
+
+<footer class="foot muted">
+  接口契约：<code>docs/HTTP接口契约.md</code>（协议 v1 冻结）· 协议语义：<code>docs/protocol/README.md</code> · 时间均为本机本地时区。
+</footer>
+
+<script src="assets/chart.js"></script>
+<script src="chart.js"></script>
+<script src="assets/app.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

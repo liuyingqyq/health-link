@@ -1,0 +1,40 @@
+{
+  "string": [
+    {
+      "name": "app_name",
+      "value": "HealthLink Collector"
+    },
+    {
+      "name": "module_desc",
+      "value": "HealthLink health data collection module"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "Collect HUAWEI Health data and upload it to your PC"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "HealthLink"
+    },
+    {
+      "name": "reason_internet",
+      "value": "Upload collected health data to your own PC"
+    },
+    {
+      "name": "reason_network_info",
+      "value": "Detect whether the phone and PC are on the same LAN"
+    },
+    {
+      "name": "reason_keep_running",
+      "value": "Keep collecting and uploading health data after you leave the app"
+    },
+    {
+      "name": "reason_bluetooth",
+      "value": "Connect to your watch, band or heart-rate strap to read health data"
+    },
+    {
+      "name": "reason_bluetooth_scan",
+      "value": "Scan for nearby Bluetooth health devices"
+    }
+  ]
+}

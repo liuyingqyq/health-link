@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>健康数据 · 只读查看</title>
+<style>
+  :root {
+    --bg: #0f1216; --card: #171b21; --line: #262c35;
+    --fg: #e8ecf1; --muted: #8b95a3; --ok: #3ddc84; --warn: #f5a623; --err: #ff5c5c;
+    --hr: #ff4d6d; --spo2: #4da3ff; --stress: #f5a623;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 15px/1.6 -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 20px 16px 60px; }
+  header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
+  h1 { font-size: 19px; margin: 0; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: middle; background: var(--muted); }
+  .dot.on { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+  .dot.err { background: var(--err); }
+  .dot.wait { background: var(--warn); }
+  .muted { color: var(--muted); font-size: 13px; }
+
+  .hero { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; }
+  .hero .big { font-size: 64px; font-weight: 700; line-height: 1.05; color: var(--hr); }
+  .hero .big small { font-size: 18px; font-weight: 400; color: var(--muted); margin-left: 8px; }
+  .hero .label { color: var(--muted); font-size: 13px; margin-bottom: 2px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .cell { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .cell .k { color: var(--muted); font-size: 12px; }
+  .cell .v { font-size: 24px; font-weight: 600; margin-top: 2px; }
+  .cell .u { font-size: 12px; color: var(--muted); margin-left: 3px; font-weight: 400; }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-top: 12px; }
+  .card h2 { font-size: 14px; margin: 0 0 10px; color: var(--muted); font-weight: 600; }
+  canvas { width: 100%; height: 150px; display: block; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  td { padding: 5px 0; border-bottom: 1px solid var(--line); }
+  tr:last-child td { border-bottom: none; }
+  td:last-child { text-align: right; color: var(--muted); }
+
+  .msg { margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-size: 13px;
+         background: rgba(245,166,35,.12); border: 1px solid rgba(245,166,35,.35); color: #ffd79a; }
+  .msg.err { background: rgba(255,92,92,.12); border-color: rgba(255,92,92,.35); color: #ffb3b3; }
+  .msg.hide { display: none; }
+  code { background: rgba(255,255,255,.08); padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>健康数据 · 只读查看</h1>
+    <div class="muted"><span id="dot" class="dot wait"></span><span id="statusText">正在连接…</span></div>
+  </header>
+
+  <!-- 心率主卡 -->
+  <div class="hero">
+    <div class="label">实时心率</div>
+    <div class="big"><span id="hr">--</span><small>次/分</small></div>
+    <div class="muted" id="hrTime">等待数据…</div>
+  </div>
+
+  <!-- 其它指标 -->
+  <div class="grid" id="metrics"></div>
+
+  <!-- 心率曲线 -->
+  <div class="card">
+    <h2>心率曲线（最近 5 分钟）</h2>
+    <canvas id="chart"></canvas>
+  </div>
+
+  <!-- 连接与设备信息 -->
+  <div class="card">
+    <h2>连接信息</h2>
+    <table>
+      <tr><td>数据来源设备</td><td id="deviceId">—</td></tr>
+      <tr><td>设备状态</td><td id="deviceState">—</td></tr>
+      <tr><td>已接收数据</td><td id="count">0 条</td></tr>
+      <tr><td>最近一条</td><td id="lastAt">—</td></tr>
+      <tr><td>电脑端地址</td><td id="serverAddr">—</td></tr>
+    </table>
+  </div>
+
+  <div class="msg hide" id="message"></div>
+
+  <p class="muted" style="margin-top:18px">
+    本页为**只读**查看，不发送任何数据到你手机，也不暴露令牌以外的权限。
+    页面关闭即停止接收。
+  </p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---------------------------------------------------------------- 配置
+  var qs = new URLSearchParams(location.search);
+  var TOKEN = qs.get('token') || '';
+  var TOPIC = qs.get('topic') || 'health';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var el = {
+    dot: $('dot'), statusText: $('statusText'), hr: $('hr'), hrTime: $('hrTime'),
+    metrics: $('metrics'), deviceId: $('deviceId'), deviceState: $('deviceState'),
+    count: $('count'), lastAt: $('lastAt'), serverAddr: $('serverAddr'),
+    message: $('message'), chart: $('chart')
+  };
+
+  // 指标展示定义（与协议 3.5 的 metric 枚举对应）
+  var METRIC_DEF = [
+    { key: 'heart_rate',          name: '心率',       unit: '次/分', digits: 0 },
+    { key: 'resting_heart_rate',  name: '静息心率',   unit: '次/分', digits: 0 },
+    { key: 'hrv',                 name: '心率变异性', unit: 'ms',    digits: 0 },
+    { key: 'spo2',                name: '血氧',       unit: '%',     digits: 0 },
+    { key: 'stress',              name: '压力',       unit: '分',    digits: 0 },
+    { key: 'body_temperature',    name: '体温',       unit: '°C',    digits: 1 }
+  ];
+
+  var latest = {};          // metric -> {value, unit, endTime}
+  var hrSeries = [];        // [{t, v}] 最近 5 分钟
+  var received = 0;
+  var device = { id: '', online: null, model: '' };
+  var ws = null;
+  var reconnectTimer = null;
+  var reconnectDelay = 1000;
+  var stopped = false;
+
+  var HR_WINDOW_MS = 5 * 60 * 1000;
+
+  // ---------------------------------------------------------------- 文案
+  function setStatus(kind, text) {
+    el.dot.className = 'dot ' + (kind === 'ok' ? 'on' : kind === 'err' ? 'err' : 'wait');
+    el.statusText.textContent = text;
+  }
+  function showMessage(text, isErr) {
+    el.message.textContent = text;
+    el.message.className = 'msg' + (isErr ? ' err' : '');
+  }
+  function hideMessage() { el.message.className = 'msg hide'; }
+
+  function fmtTime(ts) {
+    if (!ts) return '—';
+    var d = new Date(ts);
+    var p = function (n) { return n < 10 ? '0' + n : '' + n; };
+    return p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  }
+
+  function shortId(id) {
+    if (!id) return '—';
+    return id.length > 10 ? id.slice(0, 10) + '…' : id;
+  }
+
+  // ---------------------------------------------------------------- 渲染
+  function renderHero() {
+    var hr = latest['heart_rate'];
+    if (!hr || hr.value === null || hr.value === undefined) {
+      el.hr.textContent = '--';
+      el.hrTime.textContent = '等待数据…';
+      return;
+    }
+    el.hr.textContent = Math.round(hr.value);
+    el.hrTime.textContent = '更新于 ' + fmtTime(hr.endTime);
+  }
+
+  function renderMetrics() {
+    var html = '';
+    for (var i = 0; i < METRIC_DEF.length; i++) {
+      var def = METRIC_DEF[i];
+      if (def.key === 'heart_rate') continue;      // 已在主卡显示
+      var m = latest[def.key];
+      var has = m && m.value !== null && m.value !== undefined;
+      var v = has ? Number(m.value).toFixed(def.digits) : '--';
+      var u = (has && m.unit) ? m.unit : def.unit;
+      html += '<div class="cell"><div class="k">' + def.name + '</div>' +
+              '<div class="v">' + v + '<span class="u">' + u + '</span></div></div>';
+    }
+    el.metrics.innerHTML = html;
+  }
+
+  function renderInfo() {
+    el.deviceId.textContent = device.id ? shortId(device.id) + (device.model ? '（' + device.model + '）' : '') : '—';
+    el.deviceState.textContent = device.online === null ? '—' : (device.online ? '在线' : '离线');
+    el.count.textContent = received + ' 条';
+    var last = hrSeries.length > 0 ? hrSeries[hrSeries.length - 1].t : 0;
+    el.lastAt.textContent = last ? fmtTime(last) : '—';
+  }
+
+  // ---------------------------------------------------------------- 曲线
+  var ctx = el.chart.getContext('2d');
+  function drawChart() {
+    var dpr = window.devicePixelRatio || 1;
+    var w = el.chart.clientWidth, h = el.chart.clientHeight;
+    if (el.chart.width !== w * dpr || el.chart.height !== h * dpr) {
+      el.chart.width = w * dpr; el.chart.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    ctx.clearRect(0, 0, w, h);
+
+    var now = Date.now();
+    var pts = hrSeries.filter(function (p) { return now - p.t <= HR_WINDOW_MS; });
+    hrSeries = pts;
+
+    // 背景网格
+    ctx.strokeStyle = 'rgba(255,255,255,.06)';
+    ctx.lineWidth = 1;
+    for (var g = 1; g <= 3; g++) {
+      var y = (h / 4) * g;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+    }
+
+    if (pts.length < 2) {
+      ctx.fillStyle = '#8b95a3';
+      ctx.font = '12px sans-serif';
+      ctx.fillText('等待数据…', 8, h / 2);
+      return;
+    }
+
+    var vals = pts.map(function (p) { return p.v; });
+    var min = Math.min.apply(null, vals), max = Math.max.apply(null, vals);
+    if (max - min < 10) { var mid = (max + min) / 2; min = mid - 5; max = mid + 5; }
+    var pad = (max - min) * 0.15;
+    min -= pad; max += pad;
+
+    var t0 = pts[0].t, t1 = now;
+    var span = Math.max(1, t1 - t0);
+    var X = function (t) { return ((t - t0) / span) * w; };
+    var Y = function (v) { return h - ((v - min) / (max - min)) * h; };
+
+    // 面积
+    var grad = ctx.createLinearGradient(0, 0, 0, h);
+    grad.addColorStop(0, 'rgba(255,77,109,.35)');
+    grad.addColorStop(1, 'rgba(255,77,109,0)');
+    ctx.beginPath();
+    ctx.moveTo(X(pts[0].t), h);
+    for (var i = 0; i < pts.length; i++) ctx.lineTo(X(pts[i].t), Y(pts[i].v));
+    ctx.lineTo(X(pts[pts.length - 1].t), h);
+    ctx.closePath();
+    ctx.fillStyle = grad; ctx.fill();
+
+    // 折线
+    ctx.beginPath();
+    for (var j = 0; j < pts.length; j++) {
+      var x = X(pts[j].t), y = Y(pts[j].v);
+      if (j === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = '#ff4d6d'; ctx.lineWidth = 2; ctx.stroke();
+
+    // 最新点
+    var lp = pts[pts.length - 1];
+    ctx.beginPath();
+    ctx.arc(X(lp.t), Y(lp.v), 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff'; ctx.fill();
+
+    // 极值标注
+    ctx.fillStyle = '#8b95a3'; ctx.font = '11px sans-serif';
+    ctx.fillText(Math.round(max), 4, 12);
+    ctx.fillText(Math.round(min), 4, h - 4);
+  }
+
+  // ---------------------------------------------------------------- 消息处理
+  function handleSample(payload, env) {
+    if (!payload || !payload.metric) return;
+    received++;
+    latest[payload.metric] = {
+      value: payload.value,
+      unit: payload.unit,
+      endTime: payload.endTime || env.ts || Date.now()
+    };
+    if (payload.metric === 'heart_rate' && payload.value !== null && payload.value !== undefined) {
+      hrSeries.push({ t: payload.endTime || env.ts || Date.now(), v: Number(payload.value) });
+      if (hrSeries.length > 3600) hrSeries.shift();
+    }
+    if (env.deviceId && !device.id) device.id = env.deviceId;
+    renderHero(); renderMetrics(); renderInfo(); drawChart();
+  }
+
+  function handleDeviceEvent(payload) {
+    if (!payload) return;
+    if (payload.event === 'online') { device.online = true; if (payload.model) device.model = payload.model; }
+    else if (payload.event === 'offline') { device.online = false; }
+    renderInfo();
+  }
+
+  function connect() {
+    if (stopped) return;
+    if (!TOKEN) {
+      setStatus('err', '缺少令牌');
+      showMessage('这个页面需要令牌才能读取数据。请让你手机/电脑的主人把完整链接发给你，' +
+                  '形如：' + location.origin + '/share.html?token=xxxx', true);
+      return;
+    }
+    var proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    var url = proto + '//' + location.host + '/subscribe?token=' + encodeURIComponent(TOKEN) +
+              '&topic=' + encodeURIComponent(TOPIC) + '&since=0';
+    el.serverAddr.textContent = location.host;
+
+    setStatus('wait', '正在连接…');
+    try { ws = new WebSocket(url); } catch (e) {
+      setStatus('err', '无法创建连接');
+      showMessage('建立连接失败：' + e.message, true);
+      return;
+    }
+
+    ws.onopen = function () {
+      setStatus('wait', '已连接，等待数据…');
+    };
+
+    ws.onmessage = function (ev) {
+      var env;
+      try { env = JSON.parse(ev.data); } catch (e) { return; }
+      if (!env || !env.type) return;
+
+      switch (env.type) {
+        case 'subscribed':
+          reconnectDelay = 1000;
+          hideMessage();
+          device.id = (env.payload && env.payload.devices && env.payload.devices[0]) || '';
+          setStatus('ok', '已连接 · 等待数据');
+          renderInfo();
+          break;
+        case 'sample':
+          if (received === 0) setStatus('ok', '接收中');
+          handleSample(env.payload, env);
+          break;
+        case 'device_event':
+          handleDeviceEvent(env.payload);
+          break;
+        case 'gap':
+          showMessage('有一段历史数据缺失（电脑端缓冲不够），下面的数据是实时数据。');
+          break;
+        case 'nack':
+          var reason = (env.payload && env.payload.reason) || '未知';
+          if (reason === 'unauthorized') {
+            stopped = true;
+            setStatus('err', '令牌无效');
+            showMessage('令牌无效：请让数据主人重新把完整链接发给你（电脑端重启后令牌可能变化）。', true);
+          } else {
+            showMessage('电脑端返回错误：' + reason);
+          }
+          break;
+        default:
+          break;   // 未知类型忽略（向前兼容）
+      }
+    };
+
+    ws.onclose = function (ev) {
+      ws = null;
+      if (stopped) return;
+      if (ev && ev.code === 4401) {
+        stopped = true;
+        setStatus('err', '令牌无效');
+        showMessage('令牌无效，已停止重连。请让数据主人重新发你链接。', true);
+        return;
+      }
+      setStatus('err', '连接断开，重连中…');
+      scheduleReconnect();
+    };
+
+    ws.onerror = function () {
+      setStatus('err', '连接异常');
+    };
+  }
+
+  function scheduleReconnect() {
+    if (stopped) return;
+    if (reconnectTimer !== null) clearTimeout(reconnectTimer);
+    reconnectTimer = setTimeout(function () {
+      reconnectTimer = null;
+      reconnectDelay = Math.min(reconnectDelay * 2, 30000);
+      setStatus('wait', '正在重连…');
+      connect();
+    }, reconnectDelay);
+  }
+
+  // 窗口尺寸变化时重绘
+  window.addEventListener('resize', drawChart);
+  // 曲线随时间推进（即使暂无新数据也要滚动）
+  setInterval(drawChart, 2000);
+  // 离开页面时断开，别占着服务端连接
+  window.addEventListener('beforeunload', function () {
+    stopped = true;
+    if (ws) try { ws.close(); } catch (e) {}
+  });
+
+  renderMetrics(); renderInfo(); drawChart();
+  connect();
+})();
+</script>
+</body>
+</html>

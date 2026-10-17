@@ -1,0 +1,15 @@
+{
+  "app": {
+    "bundleName": "com.healthlink.collector",
+    "vendor": "healthlink",
+    "versionCode": 1000000,
+    "versionName": "1.0.0",
+    "icon": "$media:app_icon",
+    "label": "$string:app_name",
+    // 最低兼容 API 12（HarmonyOS 5.0.0），与 build-profile.json5 的
+    // compatibleSdkVersion 保持一致。HarmonyOS 5/6/7 都能装。
+    "minAPIVersion": 12
+    // 刻意不写 targetAPIVersion：由构建时的 SDK 决定（本机为 API 26 = HarmonyOS 7）。
+    // 写死成低于设备的值可能触发安装时的版本不匹配报错。
+  }
+}

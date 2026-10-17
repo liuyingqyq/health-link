@@ -1,0 +1,9 @@
+{
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "HealthLink 采集端主模块",
+  "main": "",
+  "author": "healthlink",
+  "license": "Apache-2.0",
+  "dependencies": {}
+}

@@ -1,0 +1,203 @@
+/* HealthLink 面板样式（零依赖，无外部字体/图片） */
+:root {
+  --bg: #0e1116;
+  --bg-soft: #151a22;
+  --panel: #171d26;
+  --panel-2: #1d242f;
+  --line: #2a3340;
+  --fg: #e6ebf2;
+  --fg-dim: #93a0b1;
+  --fg-faint: #6b7688;
+  --ok: #51cf66;
+  --warn: #ffd43b;
+  --bad: #ff6b6b;
+  --accent: #4dabf7;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font: 13px/1.5 "Microsoft YaHei", "PingFang SC", "Segoe UI", system-ui, sans-serif;
+  min-height: 100vh;
+}
+code { font-family: Consolas, "Courier New", monospace; color: var(--accent); }
+h1, h2, h3 { margin: 0 0 8px; font-weight: 600; }
+h2 { font-size: 14px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+h2 small, h3 small { color: var(--fg-faint); font-weight: 400; font-size: 11px; }
+h3 { font-size: 12px; color: var(--fg-dim); margin-top: 12px; }
+.muted { color: var(--fg-dim); }
+.ok { color: var(--ok); }
+.warn { color: var(--warn); }
+.bad { color: var(--bad); }
+.noscript { padding: 20px; color: var(--warn); }
+
+/* ---------- 顶部状态条（验收点 1） ---------- */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  padding: 10px 16px;
+  background: linear-gradient(180deg, #12171f, #10151c);
+  border-bottom: 1px solid var(--line);
+}
+.brand { font-size: 16px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+.brand span { font-size: 11px; color: var(--fg-faint); font-weight: 400; margin-left: 6px; }
+.statusbar { display: flex; flex-wrap: wrap; gap: 6px 14px; flex: 1 1 420px; }
+.stat { display: inline-flex; align-items: baseline; gap: 6px; font-size: 12px; }
+.stat i { color: var(--fg-faint); font-style: normal; }
+.stat b { font-weight: 600; }
+.actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button {
+  background: var(--panel-2); color: var(--fg-dim); border: 0; padding: 5px 10px;
+  font-size: 12px; cursor: pointer; font-family: inherit;
+}
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button.active { background: var(--accent); color: #06121f; font-weight: 600; }
+.btn {
+  background: var(--panel-2); color: var(--fg); border: 1px solid var(--line);
+  border-radius: 8px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-family: inherit;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn.primary { background: var(--accent); color: #06121f; border-color: var(--accent); font-weight: 600; }
+.btn.small { padding: 3px 9px; font-size: 11px; }
+.btn.danger:hover { border-color: var(--bad); color: var(--bad); }
+
+.notice {
+  margin: 10px 16px 0; padding: 8px 12px; border-radius: var(--radius);
+  background: rgba(255, 212, 59, 0.10); border: 1px solid rgba(255, 212, 59, 0.35); color: var(--warn);
+}
+
+/* ---------- 布局 ---------- */
+.layout {
+  display: grid; gap: 14px; padding: 14px 16px 24px;
+  grid-template-columns: minmax(320px, 5fr) minmax(420px, 7fr);
+  align-items: start;
+}
+.col { display: grid; gap: 14px; min-width: 0; }
+@media (max-width: 1040px) { .layout { grid-template-columns: 1fr; } }
+.panel {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 12px 14px; min-width: 0;
+}
+.foot { padding: 0 16px 24px; font-size: 11px; }
+
+/* ---------- 设备卡片（验收点 2） ---------- */
+.device-list { display: grid; gap: 10px; }
+.device-card { background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; }
+.device-head { display: flex; align-items: center; gap: 8px; }
+.device-id { font-family: Consolas, monospace; font-size: 13px; letter-spacing: 0.4px; }
+.device-model { color: var(--fg); margin-top: 4px; }
+.device-meta { display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--fg-dim); font-size: 11px; margin-top: 4px; }
+.badge {
+  border-radius: 999px; padding: 1px 9px; font-size: 11px; border: 1px solid transparent;
+  background: rgba(148, 163, 184, 0.15); color: var(--fg-dim); white-space: nowrap;
+}
+.badge-on { background: rgba(81, 207, 102, 0.16); color: var(--ok); border-color: rgba(81, 207, 102, 0.4); }
+.badge-off { background: rgba(148, 163, 184, 0.12); color: var(--fg-faint); border-color: var(--line); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.tag {
+  background: rgba(77, 171, 247, 0.12); border: 1px solid rgba(77, 171, 247, 0.35);
+  color: var(--accent); border-radius: 999px; padding: 1px 8px; font-size: 11px;
+}
+.tag-plain { background: rgba(148, 163, 184, 0.10); border-color: var(--line); color: var(--fg-faint); }
+.metric-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 6px; margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line);
+}
+.metric { display: flex; flex-direction: column; }
+.metric i { color: var(--fg-faint); font-style: normal; font-size: 11px; }
+.metric span { font-family: Consolas, monospace; font-size: 12px; }
+
+/* ---------- 曲线（验收点 3） ---------- */
+.charts { display: grid; gap: 10px; }
+.chart-block { background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 10px; }
+.chart-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.chart-title { font-size: 12px; color: var(--fg); }
+.chart-title em { color: var(--fg-faint); font-style: normal; font-size: 11px; }
+.chart-latest { font-family: Consolas, monospace; font-size: 12px; color: var(--accent); }
+.chart-canvas { display: block; width: 100%; height: 118px; }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 4px; min-height: 14px; }
+.legend-item { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--fg-dim); }
+.legend-item i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+/* ---------- 睡眠卡片（验收点 4） ---------- */
+.kv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 6px 14px; }
+.kv { display: flex; flex-direction: column; }
+.kv i { color: var(--fg-faint); font-style: normal; font-size: 11px; }
+.kv b { font-weight: 600; }
+.sleep-band-host { position: relative; }
+.sleep-band {
+  position: relative; height: 26px; width: 100%;
+  background: #0b0f14; border: 1px solid var(--line); border-radius: 6px; overflow: hidden;
+}
+.sleep-seg { position: absolute; top: 0; bottom: 0; border-right: 1px solid rgba(0, 0, 0, 0.35); }
+.sleep-seg:hover { outline: 1px solid #fff; outline-offset: -1px; }
+.sleep-axis { display: flex; justify-content: space-between; color: var(--fg-faint); font-size: 11px; margin-top: 3px; }
+.sleep-empty { padding: 6px 0; }
+.chip-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.chip-grid > p { flex: 1 1 100%; margin: 0; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 11px;
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px;
+}
+.chip i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+/* ---------- 事件流（验收点 5） ---------- */
+.event-list { list-style: none; margin: 0; padding: 0; max-height: 320px; overflow-y: auto; }
+.event-row {
+  display: grid; grid-template-columns: 68px 44px 1fr; gap: 8px;
+  padding: 3px 6px; border-bottom: 1px solid rgba(42, 51, 64, 0.55);
+  font-size: 12px; align-items: baseline;
+}
+.event-row:hover { background: rgba(77, 171, 247, 0.06); }
+.ev-time { font-family: Consolas, monospace; color: var(--fg-faint); font-size: 11px; }
+.ev-kind { font-size: 11px; color: var(--fg-dim); }
+.ev-body { min-width: 0; overflow-wrap: anywhere; }
+.ev-sample .ev-kind { color: var(--accent); }
+.ev-system .ev-kind { color: var(--fg-faint); }
+.ev-device .ev-kind { color: var(--ok); }
+.ev-warn .ev-kind { color: var(--warn); }
+.ev-bad .ev-kind { color: var(--bad); }
+
+/* ---------- 转发面板（验收点 6） ---------- */
+.forward-list { display: grid; gap: 10px; }
+.forward-row { background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; }
+.forward-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.forward-head b { font-family: Consolas, monospace; }
+.forward-url { color: var(--fg-dim); font-family: Consolas, monospace; font-size: 11px; margin-top: 5px; overflow-wrap: anywhere; }
+.forward-counters { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 11px; color: var(--fg-dim); margin-top: 6px; }
+.forward-counters b { color: var(--fg); font-family: Consolas, monospace; }
+.forward-actions { display: flex; gap: 8px; margin-top: 8px; }
+.forward-err { margin: 6px 0 0; font-size: 11px; }
+.forward-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; margin-top: 12px; }
+.forward-form input, .forward-form select {
+  background: #0f141b; color: var(--fg); border: 1px solid var(--line); border-radius: 8px;
+  padding: 6px 9px; font-size: 12px; font-family: inherit; min-width: 0;
+}
+.forward-form input:focus, .forward-form select:focus { outline: none; border-color: var(--accent); }
+.form-error { margin: 6px 0 0; color: var(--bad); font-size: 12px; }
+.badge.fw-connected { background: rgba(81, 207, 102, 0.16); color: var(--ok); border-color: rgba(81, 207, 102, 0.4); }
+.badge.fw-connecting { background: rgba(255, 212, 59, 0.14); color: var(--warn); border-color: rgba(255, 212, 59, 0.4); }
+.badge.fw-backoff, .badge.fw-error { background: rgba(255, 107, 107, 0.14); color: var(--bad); border-color: rgba(255, 107, 107, 0.4); }
+.badge.fw-disabled { background: rgba(148, 163, 184, 0.12); color: var(--fg-faint); border-color: var(--line); }
+
+/* ---------- 令牌门 ---------- */
+.gate { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background: rgba(8, 11, 15, 0.92); }
+.gate-card {
+  width: min(440px, 92vw); background: var(--panel); border: 1px solid var(--line);
+  border-radius: 12px; padding: 22px; display: grid; gap: 10px;
+}
+.gate-card h1 { font-size: 17px; }
+.gate-card p { margin: 0; font-size: 12px; }
+.gate-card label { font-size: 12px; color: var(--fg-dim); }
+.gate-card input {
+  background: #0f141b; color: var(--fg); border: 1px solid var(--line);
+  border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit;
+}
+.gate-card input:focus { outline: none; border-color: var(--accent); }
+.gate-error { color: var(--bad); font-size: 12px; }

@@ -1,0 +1,5 @@
+# 复制为 local.properties 后改成你自己的路径（该文件已被 .gitignore 忽略）
+# sdk.dir 指向 Android SDK 根目录（含 platforms/ 与 build-tools/ 那一层）
+sdk.dir=C\:\\Android\\Sdk
+# Java 21（AGP 8.x 要求 JDK 17+；本项目在 JDK 21 上验证通过）
+# 也可以在命令行用 -Dorg.gradle.java.home 指定，或直接设 JAVA_HOME
